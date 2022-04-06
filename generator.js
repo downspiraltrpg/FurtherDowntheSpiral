@@ -517,6 +517,9 @@ function remove_equipment(equip_name, button) {
 	// Update remaining Wealth and Capacity fields
 	update_wealth_label();
 	update_capacity_label();
+	
+	// Update Character Sheet
+	update_cs_equipment();
 }
 
 // Updates remaining Wealth and Capacity labels in the Equipment Tab
@@ -1344,14 +1347,13 @@ async function exportPDF() {
 	id = document.getElementById('notes');
 	var notesFull = id.value;
 	for(let trinket of trinketList) {
-		notesFull += "\n" + trinket
+		notesFull += "\n" + trinket;
 	}
-	
 	notesField.setText(notesFull);
 
 	// Serialize the PDFDocument to bytes (a Uint8Array)
 	const pdfBytes = await pdfDoc.save();
 
 	// Trigger the browser to download the PDF document
-	download(pdfBytes, "pdf-lib_form_creation_example.pdf", "application/pdf");
+	download(pdfBytes, "FDtS Character.pdf", "application/pdf");
 }
