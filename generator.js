@@ -925,8 +925,6 @@ function randomize_trinkets() {
 
 // Randomizes all aspects of the character in one go
 function randomize_all() {
-	var cont;
-	
 	// First ensure the user knows everything will be deleted
 	if(!confirm("Warning: This will delete all progress and randomize all aspects of the character. Is that ok?")) {
 		// No, so return
@@ -935,22 +933,17 @@ function randomize_all() {
 	
 	// Randomize all
 	randomize_concept();
-	cont = document.getElementById("concept_content");
 	
 	randomize_flaw();
-	cont = document.getElementById("flaw_content");
 	
 	randomize_attributes();
-	cont = document.getElementById("attributes_content");
 	
 	randomize_skills();
-	cont = document.getElementById("skills_content");
 	
 	randomize_equipment();
 	randomize_rhetoric();
 	
 	randomize_name();
-	cont = document.getElementById("name_content");
 	
 	randomize_notes();
 	randomize_trinkets();
