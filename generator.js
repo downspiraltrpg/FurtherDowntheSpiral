@@ -635,10 +635,6 @@ function randomize_equipment() {
 	update_wealth_label();
 	update_capacity_label();
 	
-	// Resize the collapsible content
-	var cont = document.getElementById("equip_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
-	
 	// Update the Character Sheet
 	update_cs_equipment();
 }
@@ -758,10 +754,6 @@ function randomize_rhetoric() {
 	// Update Rank Field
 	update_ranks();
 	
-	// Resize the collapsible content
-	var cont = document.getElementById("rhetoric_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
-	
 	// Update the Character Sheet
 	update_cs_rhetoric();
 }
@@ -832,10 +824,24 @@ function openTrinkets(evt) {
     // Close the table and add it to the page
     table += "</table>";
     document.getElementById("trinket_list").innerHTML = table;
+}
+
+// Closes the Trinket tab
+function closeTrinkets() {
+	// Initialize local variables
+	var i, tabcontent, tablink;
 	
-	// Resize the collapsible content
-	var cont = document.getElementById("notes_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
+	// Get all elements with class="tabcontent" and hide them
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for(i=0; i<tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
+	
+	// Get all elements with class="tablinks" and remove the class "active"
+	tablink = document.getElementsByClassName("tablinks");
+	for(i=0; i<tablink.length; i++) {
+    	tablink[i].className = tablink[i].className.replace(" active", "");
+	}
 }
 
 // Attempts to add the passed in Trinket to the Trinket List
@@ -867,10 +873,6 @@ function add_trinket(trinket) {
 	
 	// Update Character Sheet
 	update_cs_notes();
-	
-	// Resize the collapsible content
-	var cont = document.getElementById("notes_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
 }
 
 // Removes the passed in Trinket
@@ -919,10 +921,6 @@ function randomize_trinkets() {
 		}
 		escape++;
 	}
-	
-	// Resize the collapsible content
-	var cont = document.getElementById("notes_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
 }
 
 // Randomizes all aspects of the character in one go
@@ -938,26 +936,21 @@ function randomize_all() {
 	// Randomize all
 	randomize_concept();
 	cont = document.getElementById("concept_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
 	
 	randomize_flaw();
 	cont = document.getElementById("flaw_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
 	
 	randomize_attributes();
 	cont = document.getElementById("attributes_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
 	
 	randomize_skills();
 	cont = document.getElementById("skills_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
 	
 	randomize_equipment();
 	randomize_rhetoric();
 	
 	randomize_name();
 	cont = document.getElementById("name_content");
-	cont.style.maxHeight = cont.scrollHeight + "px";
 	
 	randomize_notes();
 	randomize_trinkets();

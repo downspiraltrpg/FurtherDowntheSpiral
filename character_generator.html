@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<script src="https://unpkg.com/pdf-lib@1.11.0"></script>
+    	<script src="https://unpkg.com/downloadjs@1.4.7"></script>
+		<link rel="stylesheet" href="StaticLayout.css">
+		<title>【FDtS Character Generator】</title>
+	</head>
+	<body>
+		<!-- Introduction -->
+		<h1>【FDtS Character Generator】</h1>
+		<p>Welcome to the Further Down the Spiral Character Generator.<br>
+			This webpage will walk you through the character creation process, allowing you to manually choose or randomize any aspect of your character.<br>
+			The generated character can then be exported to the official Character Sheet PDF.<br>
+			Be sure to enable Javascript and browser notifications for the Generator to work properly.<br>
+			To start, click on a tab to reveal its contents. You may click on an open tab to hide it (no progress will be lost).
+		</p>
+		<button type="button" class="button-black" onclick="randomize_all()">Randomize All</button><br><br>
+		<!-- Step 1 - Concept -->
+		<button type="button" class="collapsible">【Step 1 - Concept】</button>
+		<div class="content" id="concept_content">
+			<p>Your <b>Concept</b> is a phrase that explains who and what you are, and helps you roleplay as well as determine how the Spiral and its denizens see you.<br>
+				For example, <i>Charming Swashbuckler</i></p><br>
+			<button name="Randomize" type="button" class="button-white" onclick="randomize_concept()">Randomize</button>
+			<input type="text" id="concept" oninput="update_cs_concept()" placeholder="Enter your Concept..." size=50><br><br>
+		</div>
+		<!-- Step 2 - Flaw -->
+		<button type="button" class="collapsible">【Step 2 - Flaw】</button>
+		<div class="content" id="flaw_content">
+			<p>Your <b>Flaw</b> is something that gets you into trouble. By willingly acting out your Flaw, you may recover Stress.<br>
+				For example, <i>tends to bet it all gambling</i></p><br>
+			<button name="Randomize" type="button" class="button-white" onclick="randomize_flaw()">Randomize</button>
+			<input type="text" id="flaw" oninput="update_cs_flaw()" placeholder="Enter your Flaw..." size=50><br><br>
+		</div>
+		<!-- Step 3 - Primary Attributes -->
+		<button type="button" class="collapsible">【Step 3 - Primary Attributes】</button>
+		<div class="content" id="attributes_content">
+			<p><b>Primary Attributes</b> (<span class="body_text">Body</span>, <span class="mind_text">Mind</span>, <span class="soul_text">Soul</span>, and <span class="teq_text">Teq</span>) determine how well you can interact with the Spiral.<br>
+				All Attributes start at Rank 3, and you have 20 points to spend on increasing their Ranks.<br>
+				Upgrades cost a number of points equal to the new Rank. <i>(i.e. upgrading 3 to 4 costs 4 points, and another 5 points for 4 to 5)</i><br>
+				The <i>maximum</i> Rank at Character Creation is 6 with a <i>minimum</i> of 1.
+			</p>
+			<p>You may gain more points by lowering an Attribute below the starting value. You may also gain 5 points per Rank of <span class="decay_text">Decay</span>.<br>
+				However, your <span class="decay_text">Decay</span> can never go below this starting value during the campaign, so new players are recommended to leave it at 0.</p>
+			<p><b>Remaining Points:</b> <label id="remainPoints">20</label> <button name="Randomize" type="button" class="button-white" onclick="randomize_attributes()">Randomize</button> 
+				<button name="Reset" type="button" class="button-white" onclick="reset_attributes()">Reset</button></p>
+			<table>
+				<tr>
+					<td><span class="body_text">Body</span> <button type="button" onclick="update_attribute(0, -1); update_capacity()">-</button> <label id="rank0">3</label> <button type="button" onclick="update_attribute(0, 1); update_capacity()">+</button></td>
+					<td><span class="mind_text">Mind</span> <button type="button" onclick="update_attribute(1, -1); update_skills()">-</button> <label id="rank1">3</label> <button type="button" onclick="update_attribute(1, 1); update_skills()">+</button></td>
+					<td><span class="soul_text">Soul</span> <button type="button" onclick="update_attribute(2, -1)">-</button> <label id="rank2">3</label> <button type="button" onclick="update_attribute(2, 1)">+</button></td>
+					<td><span class="teq_text">Teq</span> <button type="button" onclick="update_attribute(3, -1)">-</button> <label id="rank3">3</label> <button type="button" onclick="update_attribute(3, 1)">+</button></td>
+					<td><span class="decay_text">Decay</span> <button type="button" onclick="update_attribute(6, -1)">-</button> <label id="rank6">0</label> <button type="button" onclick="update_attribute(6, 1)">+</button></td>
+				</tr>
+			</table>
+		</div>
+		<!-- Step 4 - Skills -->
+		<button type="button" class="collapsible">【Step 4 - Skills】</button>
+		<div class="content" id="skills_content">
+			<p><b>Skills</b> represent areas of specialization that grant you a +1 Bonus on related Checks.<br>
+				You get a number of Skills equal to your <span class="mind_text">Mind</span> + 1. You may use the following Skill List.
+			</p>
+			<p><b>Remaining Skills:</b> <label id="remainSkills">4</label> <button name="Randomize" type="button" class="button-white" onclick="randomize_skills()">Randomize</button> 
+				<button name="Reset" type="button" class="button-white" onclick="reset_skills()">Reset</button></p>
+			<table>
+				<tr>
+					<td><span class="body_text">Body Skills</span></td><td><span class="mind_text">Mind Skills</span><td><span class="soul_text">Soul Skills</span><td><span class="teq_text">Teq Skills</span></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="bodySkill1" name="bodySkill1" value="Athletics" onclick="check_skills(this.id)"><label for="bodySkill1">Athletics</label></td>
+					<td><input type="checkbox" class="skillCheck" id="mindSkill1" name="mindSkill1" value="Alchemy" onclick="check_skills(this.id)"><label for="mindSkill1">Alchemy</label></td>
+					<td><input type="checkbox" class="skillCheck" id="soulSkill1" name="soulSkill1" value="Bartering" onclick="check_skills(this.id)"><label for="soulSkill1">Bartering</label></td>
+					<td><input type="checkbox" class="skillCheck" id="teqSkill1" name="teqSkill1" value="Artistry" onclick="check_skills(this.id)"><label for="teqSkill1">Artistry</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="bodySkill2" name="bodySkill2" value="Acrobatics" onclick="check_skills(this.id)"><label for="bodySkill2">Acrobatics</label></td>
+					<td><input type="checkbox" class="skillCheck" id="mindSkill2" name="mindSkill2" value="Astronomy" onclick="check_skills(this.id)"><label for="mindSkill2">Astronomy</label></td>
+					<td><input type="checkbox" class="skillCheck" id="soulSkill2" name="soulSkill2" value="Deception" onclick="check_skills(this.id)"><label for="soulSkill2">Deception</label></td>
+					<td><input type="checkbox" class="skillCheck" id="teqSkill2" name="teqSkill2" value="Crafting" onclick="check_skills(this.id)"><label for="teqSkill2">Crafting</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="bodySkill3" name="bodySkill3" value="Climbing" onclick="check_skills(this.id)"><label for="bodySkill3">Climbing</label></td>
+					<td><input type="checkbox" class="skillCheck" id="mindSkill3" name="mindSkill3" value="Engineering" onclick="check_skills(this.id)"><label for="mindSkill3">Engineering</label></td>
+					<td><input type="checkbox" class="skillCheck" id="soulSkill3" name="soulSkill3" value="Diplomacy" onclick="check_skills(this.id)"><label for="soulSkill3">Diplomacy</label></td>
+					<td><input type="checkbox" class="skillCheck" id="teqSkill3" name="teqSkill3" value="Driving" onclick="check_skills(this.id)"><label for="teqSkill3">Driving</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="bodySkill4" name="bodySkill4" value="Endurance" onclick="check_skills(this.id)"><label for="bodySkill4">Endurance</label></td>
+					<td><input type="checkbox" class="skillCheck" id="mindSkill4" name="mindSkill4" value="Geography" onclick="check_skills(this.id)"><label for="mindSkill4">Geography</label></td>
+					<td><input type="checkbox" class="skillCheck" id="soulSkill4" name="soulSkill4" value="Intimidation" onclick="check_skills(this.id)"><label for="soulSkill4">Intimidation</label></td>
+					<td><input type="checkbox" class="skillCheck" id="teqSkill4" name="teqSkill4" value="Forgery" onclick="check_skills(this.id)"><label for="teqSkill4">Forgery</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="bodySkill5" name="bodySkill5" value="Riding" onclick="check_skills(this.id)"><label for="bodySkill5">Riding</label></td>
+					<td><input type="checkbox" class="skillCheck" id="mindSkill5" name="mindSkill5" value="Linguistics" onclick="check_skills(this.id)"><label for="mindSkill5">Linguistics</label></td>
+					<td><input type="checkbox" class="skillCheck" id="soulSkill5" name="soulSkill5" value="Serendipity" onclick="check_skills(this.id)"><label for="soulSkill5">Serendipity</label></td>
+					<td><input type="checkbox" class="skillCheck" id="teqSkill5" name="teqSkill5" value="Lock-picking" onclick="check_skills(this.id)"><label for="teqSkill5">Lock-picking</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="bodySkill6" name="bodySkill6" value="Speed" onclick="check_skills(this.id)"><label for="bodySkill6">Speed</label></td>
+					<td><input type="checkbox" class="skillCheck" id="mindSkill6" name="mindSkill6" value="Logic" onclick="check_skills(this.id)"><label for="mindSkill6">Logic</label></td>
+					<td><input type="checkbox" class="skillCheck" id="soulSkill6" name="soulSkill6" value="Spirituality" onclick="check_skills(this.id)"><label for="soulSkill6">Spirituality</label></td>
+					<td><input type="checkbox" class="skillCheck" id="teqSkill6" name="teqSkill6" value="Repair" onclick="check_skills(this.id)"><label for="teqSkill6">Repair</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="bodySkill7" name="bodySkill7" value="Strength" onclick="check_skills(this.id)"><label for="bodySkill7">Strength</label></td>
+					<td><input type="checkbox" class="skillCheck" id="mindSkill7" name="mindSkill7" value="Memorization" onclick="check_skills(this.id)"><label for="mindSkill7">Memorization</label></td>
+					<td><input type="checkbox" class="skillCheck" id="soulSkill7" name="soulSkill7" value="Willpower" onclick="check_skills(this.id)"><label for="soulSkill7">Willpower</label></td>
+					<td><input type="checkbox" class="skillCheck" id="teqSkill7" name="teqSkill7" value="Stealth" onclick="check_skills(this.id)"><label for="teqSkill7">Stealth</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="bodySkill8" name="bodySkill8" value="Swimming" onclick="check_skills(this.id)"><label for="bodySkill8">Swimming</label></td>
+					<td><input type="checkbox" class="skillCheck" id="mindSkill8" name="mindSkill8" value="Perception" onclick="check_skills(this.id)"><label for="mindSkill8">Perception</label></td>
+					<td><input type="checkbox" class="skillCheck" id="soulSkill8" name="soulSkill8" value="Wisdom" onclick="check_skills(this.id)"><label for="soulSkill8">Wisdom</label></td>
+					<td><input type="checkbox" class="skillCheck" id="teqSkill8" name="teqSkill8" value="Trickery" onclick="check_skills(this.id)"><label for="teqSkill8">Trickery</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="skillCheck" id="customSkill1" name="customSkill1" value="Custom Skill 1" onclick="check_skills(this.id)"><input type="text" id="customSkillName1" oninput="update_custom_skill(this)" placeholder="Custom Skill"></td>
+					<td><input type="checkbox" class="skillCheck" id="customSkill2" name="customSkill2" value="Custom Skill 2" onclick="check_skills(this.id)"><input type="text" id="customSkillName2" oninput="update_custom_skill(this)" placeholder="Custom Skill"></td>
+					<td><input type="checkbox" class="skillCheck" id="customSkill3" name="customSkill3" value="Custom Skill 3" onclick="check_skills(this.id)"><input type="text" id="customSkillName3" oninput="update_custom_skill(this)" placeholder="Custom Skill"></td>
+					<td><input type="checkbox" class="skillCheck" id="customSkill4" name="customSkill4" value="Custom Skill 4" onclick="check_skills(this.id)"><input type="text" id="customSkillName4" oninput="update_custom_skill(this)" placeholder="Custom Skill"></td>
+				</tr>
+			</table>
+		</div>
+		<!-- Step 5 - Equipment -->
+		<button type="button" class="collapsible">【Step 5 - Equipment】</button>
+		<div class="content" id="equip_content">
+			<p>
+				<b>Equipment</b> encompasses weapons, armor, and other useful tools. You have 3 <span class="wealth_text">Wealth</span> to spend on Equipment, with their prices listed below.<br>
+				Any unspent can be used later in the campaign. Each piece of Equipment consumes 1 <span class="capacity_text">Capacity</span> unless stated otherwise.<br>
+				Note: If you do not purchase any other weapons you may take a <i>Free Dagger</i> or a <i>Free Sling</i>.
+			</p>
+			<p>
+				<span class="wealth_text">Wealth: </span> <label id="remainWealth">3</label>
+				<span class="capacity_text">Capacity: </span> <label id="remainCapacity">4</label>
+				<button name="Randomize" type="button" class="button-white" onclick="randomize_equipment()">Randomize</button>
+				<button name="Reset" type="button" class="button-white" onclick="reset_equipment()">Reset</button>
+			</p>
+			<p>
+				<b>Currently Selected Equipment:</b>
+				<table id="curr_equip" class="odd"></table>
+			</p>
+
+			<div class="tab">
+				<button class="tablinks" onclick="openEquipment(event, 'melee')">Melee Weapons</button>
+				<button class="tablinks" onclick="openEquipment(event, 'ranged')">Ranged Weapons</button>
+				<button class="tablinks" onclick="openEquipment(event, 'armor')">Armor and Shields</button>
+				<button class="tablinks" onclick="openEquipment(event, 'items')">Items</button>
+			</div>
+			
+			<div id="melee" class="tabcontent">
+				<h3>Melee Weapons</h3>
+				<p>Melee Weapons use <span class="body_text">Body</span> on all attacks unless otherwise specified, and can only target nearby enemies.</p>
+				<div id="melee_list"></div>
+			</div>
+			<div id="ranged" class="tabcontent">
+				<h3>Ranged Weapons</h3>
+				<p>Ranged Weapons use <span class="teq_text">Teq</span> unless otherwise specified and do not require ammo tracking. May target any enemy that is not Out of Range, but attacks against faraway targets take a -1 Penalty.</p>
+				<div id="ranged_list"></div>
+			</div>
+			<div id="armor" class="tabcontent">
+				<h3>Armor and Shields</h3>
+				<p>Armor costs Capacity even when worn. The effects of Armor and Shields stack.</p>
+				<div id="armor_list"></div>
+			</div>
+			<div id="items" class="tabcontent">
+				<h3>Items and other Equipment</h3>
+				<p>Consumables and other tools useful for exploration.</p>
+				<div id="items_list"></div>
+			</div>	
+		</div>
+		<!-- Step 6 - Rhetoric -->
+		<button type="button" class="collapsible">【Step 6 - Rhetoric】</button>
+		<div class="content" id="rhetoric_content">
+			<p>
+				<b>Rhetoric</b> allows you to manipulate the Spiral, its denizens, the rules, or otherwise grant new abilities.<br>
+				You may choose a mix of Rank 1 and 2 Rhetoric to a total of <u>3 Ranks</u>.<br>
+				Rhetoric is noted as <u>Name (Rank)</u> - Description<br>
+				Rhetoric is organized by <b>Archetype</b>; click on an Archetype button to see its Rhetoric.
+			</p>
+			<p><b>Remaining Ranks:</b> <label id="remainRanks">3</label> <button name="Randomize" type="button" class="button-white" onclick="randomize_rhetoric()">Randomize</button> 
+				<button name="Reset" type="button" class="button-white" onclick="reset_rhetoric()">Reset</button></p>
+			<p>
+				<b>Currently Selected Rhetoric:</b>
+				<table id="curr_rhet" class="odd"></table>
+			</p>
+
+			<div class="tab">
+				<button class="tablinks" onclick="openArchetype(event, 'warrior')">The Warrior</button>
+				<button class="tablinks" onclick="openArchetype(event, 'wizard')">The Wizard</button>
+				<button class="tablinks" onclick="openArchetype(event, 'tactician')">The Tactician</button>
+				<button class="tablinks" onclick="openArchetype(event, 'swashbuckler')">The Swashbuckler</button>
+				<button class="tablinks" onclick="openArchetype(event, 'hothead')">The Hothead</button>
+				<button class="tablinks" onclick="openArchetype(event, 'believer')">The Believer</button>
+				<button class="tablinks" onclick="openArchetype(event, 'diplomat')">The Diplomat</button>
+				<button class="tablinks" onclick="openArchetype(event, 'spy')">The Spy</button>
+				<button class="tablinks" onclick="openArchetype(event, 'trickster')">The Trickster</button>
+				<button class="tablinks" onclick="openArchetype(event, 'leader')">The Leader</button>
+				<button class="tablinks" onclick="openArchetype(event, 'bully')">The Bully</button>
+				<button class="tablinks" onclick="openArchetype(event, 'mystic')">The Mystic</button>
+				<button class="tablinks" onclick="openArchetype(event, 'explorer')">The Explorer</button>
+				<button class="tablinks" onclick="openArchetype(event, 'thief')">The Thief</button>
+				<button class="tablinks" onclick="openArchetype(event, 'scholar')">The Scholar</button>
+				<button class="tablinks" onclick="openArchetype(event, 'healer')">The Healer</button>
+				<button class="tablinks" onclick="openArchetype(event, 'naturalist')">The Naturalist</button>
+				<button class="tablinks" onclick="openArchetype(event, 'artisan')">The Artisan</button>
+				<button class="tablinks" onclick="openArchetype(event, 'fool')">The Fool</button>
+			</div>
+			
+			<div id="warrior" class="tabcontent">
+				<h3>The Warrior</h3>
+				<p>Skilled in a variety of martial weapons, the <b>Warrior</b> is most at home on the battlefield.</p>
+				<div id="warrior_list"></div>
+			</div>
+			<div id="wizard" class="tabcontent">
+				<h3>The Wizard</h3>
+				<p>Master of the arcane, the <b>Wizard</b> bends the elements and reality on a whim.</p>
+				<div id="wizard_list"></div>
+			</div>
+			<div id="tactician" class="tabcontent">
+				<h3>The Tactician</h3>
+				<p>Calculating and calm in battle, the <b>Tactician</b> is an expert in tactics and utilizing the battlefield to their advantage.</p>
+				<div id="tactician_list"></div>
+			</div>
+			<div id="swashbuckler" class="tabcontent">
+				<h3>The Swashbuckler</h3>
+				<p>Swift in hand and feet, the <b>Swashbuckler</b> weaves through combat to deliver fast, deadly blows.</p>
+				<div id="swashbuckler_list"></div>
+			</div>
+			<div id="hothead" class="tabcontent">
+				<h3>The Hothead</h3>
+				<p>The <b>Hothead</b> eschews tactics and runs headfirst into danger to defeat the enemy.</p>
+				<div id="hothead_list"></div>
+			</div>
+			<div id="believer" class="tabcontent">
+				<h3>The Believer</h3>
+				<p>The <b>Believer</b> relies upon faith in a higher power to protect their comrades and smite enemies where they stand.</p>
+				<div id="believer_list"></div>
+			</div>
+			<div id="diplomat" class="tabcontent">
+				<h3>The Diplomat</h3>
+				<p>With a silver tongue and graceful tact, the <b>Diplomat</b> excels at diffusing tense situations and convincing others to their side.</p>
+				<div id="diplomat_list"></div>
+			</div>
+			<div id="spy" class="tabcontent">
+				<h3>The Spy</h3>
+				<p>Expert of subterfuge, the <b>Spy</b> deceives others with ease.</p>
+				<div id="spy_list"></div>
+			</div>
+			<div id="trickster" class="tabcontent">
+				<h3>The Trickster</h3>
+				<p>Master of illusions, the <b>Trickster</b> amazes and fools enemy and friend alike.</p>
+				<div id="trickster_list"></div>
+			</div>
+			<div id="leader" class="tabcontent">
+				<h3>The Leader</h3>
+				<p>Charismatic and strong willed, the <b>Leader</b> serves as a beacon for others to follow.</p>
+				<div id="leader_list"></div>
+			</div>
+			<div id="bully" class="tabcontent">
+				<h3>The Bully</h3>
+				<p>The <b>Bully</b> is a brute skilled in intimidation and forcing others to their will.</p>
+				<div id="bully_list"></div>
+			</div>
+			<div id="mystic" class="tabcontent">
+				<h3>The Mystic</h3>
+				<p>The <b>Mystic</b> is master of the supernatural and esoteric knowledge.</p>
+				<div id="mystic_list"></div>
+			</div>
+			<div id="explorer" class="tabcontent">
+				<h3>The Explorer</h3>
+				<p>Skilled in journeying through the unknown, the <b>Explorer</b> can comfortably traverse any type of terrain.</p>
+				<div id="explorer_list"></div>
+			</div>
+			<div id="thief" class="tabcontent">
+				<h3>The Thief</h3>
+				<p>Furtive and dexterous, the <b>Thief</b> can slip past guards undetected and disarm locks and traps with ease.</p>
+				<div id="thief_list"></div>
+			</div>
+			<div id="scholar" class="tabcontent">
+				<h3>The Scholar</h3>
+				<p>Filled with knowledge of all matters of subjects, the <b>Scholar</b> is master of wordly knowledge.</p>
+				<div id="scholar_list"></div>
+			</div>
+			<div id="healer" class="tabcontent">
+				<h3>The Healer</h3>
+				<p>The <b>Healer</b> revitalizes the injured and pulls back those dying from the brink.</p>
+				<div id="healer_list"></div>
+			</div>
+			<div id="naturalist" class="tabcontent">
+				<h3>The Naturalist</h3>
+				<p>Completely attuned with nature and its inhabitants, the <b>Naturalist</b> thrives in the wilderness.</p>
+				<div id="naturalist_list"></div>
+			</div>
+			<div id="artisan" class="tabcontent">
+				<h3>The Artisan</h3>
+				<p>Master of craft, the <b>Artisan</b> is second to none in the fine arts.</p>
+				<div id="artisan_list"></div>
+			</div>
+			<div id="fool" class="tabcontent">
+				<h3>The Fool</h3>
+				<p>The <b>Fool</b> throws caution to the wind and relies on pure luck and pluck.</p>
+				<div id="fool_list"></div>
+			</div>
+		</div>
+		<!-- Step 7 - Name -->
+		<button type="button" class="collapsible">【Step 7 - Name】</button>
+		<div class="content" id="name_content">
+			<p>Now it's time to decide on a name for your character. This can be a generic title such as <i>The Red Spear</i> or a proper given name such as <i>Julian</i> or <i>Wolf</i>.</p><br>
+			<button name="Randomize" type="button" class="button-white" onclick="randomize_name()">Randomize</button>
+			<input type="text" id="char_name" oninput="update_cs_name()" placeholder="Enter your wretched's name..." size=50><br><br>
+		</div>
+		<!-- Step 8 - Finishing Touches -->
+		<button type="button" class="collapsible">【Step 8 - Finishing Touches】</button>
+		<div class="content" id="notes_content">
+			<p>Finally, feel free to note anything else about your character, such as personality quirks or goals into the <b>Notes</b> section.<br>
+				You may also take one or two <b>Trinkets</b>, items used mostly for roleplaying that do not consume <span class="capacity_text">Capacity.</span></p>
+			<p><b>Notes</b></p>
+			<button name="Randomize" type="button" class="button-white" onclick="randomize_notes()">Randomize</button>
+			<input type="text" id="notes" oninput="update_cs_notes()" placeholder="Enter notes here..." size=50><br>
+			<p><b>Trinkets</b></p>
+			<p>
+				<button name="Randomize" type="button" class="button-white" onclick="randomize_trinkets()">Randomize</button>
+				<button name="Reset" type="button" class="button-white" onclick="reset_trinkets()">Reset Trinkets</button>
+			</p>
+			<table id="curr_trinkets" class="odd"></table>
+			<div class="tab">
+				<button class="tablinks" onclick="openTrinkets(event)">Trinket List</button>
+			</div>
+			<div id="trinket" class="tabcontent">
+				<h3>Trinket List</h3>
+				<div id="trinket_list"></div>
+			</div><br>
+		</div>
+		<!-- Error List -->
+		<div id="error_content" class="error_content">
+			<h3 class="error_heading">【Errors】</h3>
+			<p class="error_body">This is a list of errors updated every time you make a change to your character.<br>
+				You must resolve each error before you can export your character to PDF.
+			</p><br>
+			<p class="error_body"><b>Error List</b></p>
+			<table class="odd" id="error_table"></table>
+		</div>
+		<!-- Character Sheet -->
+		<div class="charsheet" id="character_sheet">
+			<h1>【Character Sheet】</h1>
+			<!-- Name, Concept, Flaw -->
+			<p><b>Name:</b> <u><label id="cs_name"></label></u></p>
+			<p><b>Concept:</b> <u><label id="cs_concept"></label></u></p>
+			<p><b>Flaw:</b> <u><label id="cs_flaw"></label></u></p>
+			<!-- Primary Attributes -->
+			<p>
+				<span class="body_text">Body </span><u><label id="cs_body">3</label></u>
+				<span class="mind_text">Mind </span><u><label id="cs_mind">3</label></u>
+				<span class="soul_text">Soul </span><u><label id="cs_soul">3</label></u>
+				<span class="teq_text">Teq </span><u><label id="cs_teq">3</label></u>
+			</p>
+			<!-- Secondary Attributes -->
+			<p>
+				<span class="capacity_text">Capacity </span><u><label id="cs_capacity">4</label></u>
+				<span class="wealth_text">Wealth </span><u><label id="cs_wealth">3</label></u>
+				<span class="decay_text">Decay </span><u><label id="cs_decay">0</label></u>
+			</p>
+			<!-- Skills list -->
+			<p>
+				<b>Skills</b><br>
+				<u><label id="cs_skills"></label></u>
+			</p>
+			<!-- Equipment list -->
+			<p>
+				<b>Equipment</b><br>
+				<table class="odd" id="cs_equipment"></table>
+			</p>
+			<!-- Rhetoric list -->
+			<p>
+				<b>Rhetoric</b><br>
+				<table class="odd" id="cs_rhetoric"></table>
+			</p>
+			<!-- Notes -->
+			<p>
+				<b>Notes</b><br>
+				<label id="cs_notes"></label>
+			</p>
+		</div>
+		<!-- Export to PDF Button -->
+		<div>
+			<p>
+				<button class="button-black" onclick="exportPDF()">Export to PDF</button>
+			</p>
+		</div>
+	</body>
+	<footer>
+		<p>Further Down the Spiral – The Fantasy RPG of Forgotten Legends © 2022 is licensed under CC BY 4.0.<br>
+			To view a copy of this license, visit <a href="http://creativecommons.org/licenses/by-sa/4.0/">http://creativecommons.org/licenses/by-sa/4.0/</a><br>
+			If you have any questions, comments, or feedback regarding Further Down the Spiral, contact downspiraltrpg@gmail.com
+		</p>
+	</footer>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    } 
+  });
+}
+</script>
+<script src="./Equipment.js"></script>
+<script src="./generator.js"></script>
+<script src="./Rhetoric.js"></script>
+
+</html>

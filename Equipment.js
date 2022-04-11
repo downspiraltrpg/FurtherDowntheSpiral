@@ -56,17 +56,7 @@ function openEquipment(evt, equip) {
 	// Initialize local variables
 	var i, tabcontent, tablink, equip_list;
 	
-	// Get all elements with class="tabcontent" and hide them
-	tabcontent = document.getElementsByClassName("tabcontent");
-	for(i=0; i<tabcontent.length; i++) {
-		tabcontent[i].style.display = "none";
-	}
-	
-	// Get all elements with class="tablinks" and remove the class "active"
-	tablink = document.getElementsByClassName("tablinks");
-	for(i=0; i<tablink.length; i++) {
-    	tablink[i].className = tablink[i].className.replace(" active", "");
-  }
+	closeEquipment();
   
 	// Show the current tab
 	document.getElementById(equip).style.display = "block";
@@ -117,6 +107,24 @@ function openEquipment(evt, equip) {
 	// Resize the collapsible content
 	var cont = document.getElementById("equip_content");
 	cont.style.maxHeight = cont.scrollHeight + "px";
+}
+
+// Close the Equipment tabs
+function closeEquipment() {
+	// Initialize local variables
+	var i, tabcontent, tablink, equip_list;
+	
+	// Get all elements with class="tabcontent" and hide them
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for(i=0; i<tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
+	
+	// Get all elements with class="tablinks" and remove the class "active"
+	tablink = document.getElementsByClassName("tablinks");
+	for(i=0; i<tablink.length; i++) {
+    	tablink[i].className = tablink[i].className.replace(" active", "");
+	}
 }
 
 // List of all Melee Weapons

@@ -35,16 +35,7 @@ function openArchetype(evt, arch) {
 	var i, tabcontent, tablink, rhet_list;
 	
 	// Get all elements with class="tabcontent" and hide them
-	tabcontent = document.getElementsByClassName("tabcontent");
-	for(i=0; i<tabcontent.length; i++) {
-		tabcontent[i].style.display = "none";
-	}
-	
-	// Get all elements with class="tablinks" and remove the class "active"
-	tablink = document.getElementsByClassName("tablinks");
-	for(i=0; i<tablink.length; i++) {
-    	tablink[i].className = tablink[i].className.replace(" active", "");
-  }
+	closeArchetype();
   
 	// Show the current tab
 	document.getElementById(arch).style.display = "block";
@@ -133,6 +124,24 @@ function openArchetype(evt, arch) {
 	// Resize the collapsible content
 	var cont = document.getElementById("rhetoric_content");
 	cont.style.maxHeight = cont.scrollHeight + "px";
+}
+
+// Closes the Archetype tabs
+function closeArchetype() {
+	// Initialize local variables
+	var i, tabcontent, tablink, rhet_list;
+	
+	// Get all elements with class="tabcontent" and hide them
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for(i=0; i<tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
+	
+	// Get all elements with class="tablinks" and remove the class "active"
+	tablink = document.getElementsByClassName("tablinks");
+	for(i=0; i<tablink.length; i++) {
+    	tablink[i].className = tablink[i].className.replace(" active", "");
+	}
 }
 
 // List of all Rhetoric sorted by Archetype
